@@ -32,11 +32,10 @@ International Equities (to be determined)
 S&P 500
 DJIA
 
-
 ####Specific Datasets:
-- All stocks in S&P 500 (daily and possibly minute) pulled from Quandl
+- End-of-day price from 2000 and minute price from past 20 days for all stocks in S&P 500, pulled from Quandl and Google Finance
 
-####Features for each stock
+####Technical Features for each stock to use in TDA
 - Raw stock prices/indexes
 - Mean-centered stock prices
 - Beta (relative measure of volatility)
@@ -44,7 +43,16 @@ DJIA
 - 5-day moving average
 - Average Directional Index (ADX)
 
+####Features extracted from TDA
+- Periodicity from point clouds
+- Momentum from persistence diagrams
+- Correlation from point clouds/persistence diagrams
 
 ####Different Methods:
-- Weierstrauss Distance to compare different stocks (Bottleneck Stability), Mean-center stocks, compare by windows
+- Wasserstein Distance (or L-infinity norm) to compare different stocks (Bottleneck Stability), Mean-center stocks, compare by windows
 - Sliding Window Delayed Reconstruction to find patterns in raw individual stock prices
+- Use neural networks to identify momentum based on categorizing persistence diagrams
+- Compare interday vs. intraday topology
+
+####Question:
+Can we find persistent features and patterns in stock price movements using TDA? In particular, can we find and compute periodicity, volatility, and momentum in a stock, and correlations between stocks using techniques from TDA?
