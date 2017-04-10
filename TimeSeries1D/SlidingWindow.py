@@ -51,7 +51,7 @@ if __name__ == '__main__':
     dT = 0.1
     X = getSlidingWindowNoInterp(x, dim)
     extent = Tau*dim
-    PDs = doRipsFiltration(X, 1)
+    PDs = doRipsFiltration(X, 2)
     pca = PCA(n_components = 2)
     Y = pca.fit_transform(X)
     eigs = pca.explained_variance_
@@ -70,32 +70,36 @@ if __name__ == '__main__':
     c = plt.get_cmap('Spectral')
     C = c(np.array(np.round(np.linspace(0, 255, Y.shape[0])), dtype=np.int64))
     C = C[:, 0:3]
-    plt.figure(figsize=(12, 6))
-    ax = plt.subplot(121)
+    plt.figure(figsize=(15, 6))
+    ax = plt.subplot(131)
     ax.plot(x)
     # ax.set_ylim((700, 900))
     ax.set_title("Original Signal")
     ax.set_xlabel("Phase")
-    ax2 = plt.subplot(122)
+    ax2 = plt.subplot(132)
     ax2.set_title("PCA of Sliding Window Embedding")
     ax2.scatter(Y[:, 0], Y[:, 1], c=C)
     ax2.set_aspect('equal', 'datalim')
+    ax3 = plt.subplot(133)
+    I = PDs[1]
+    ax3.set_title("Max Persistence = %.3g"%np.max(I[:, 1] - I[:, 0]))
+    plotDGM(I)
     plt.savefig('Google1.png')
     #plt.show()
 
-    #Step 5: Plot original signal and the persistence diagram
-    fig = plt.figure(figsize=(12, 6))
-    ax = plt.subplot(121)
-    ax.plot(x)
-    ax.set_ylim((700, 900))
-    ax.set_title("Original Signal")
-    ax.set_xlabel("Sample Number")
-    ax.hold(True)
-    ax.plot([extent, extent], [np.min(x), np.max(x)], 'r')
+    # #Step 5: Plot original signal and the persistence diagram
+    # fig = plt.figure(figsize=(12, 6))
+    # ax = plt.subplot(121)
+    # ax.plot(x)
+    # ax.set_ylim((700, 900))
+    # ax.set_title("Original Signal")
+    # ax.set_xlabel("Sample Number")
+    # ax.hold(True)
+    # ax.plot([extent, extent], [np.min(x), np.max(x)], 'r')
 
-    ax2 = fig.add_subplot(122)
-    I = PDs[1]
-    plotDGM(I)
-    plt.title("Max Persistence = %.3g"%np.max(I[:, 1] - I[:, 0]))
-    plt.savefig('Google2.png')
-    # plt.show()
+    # ax2 = fig.add_subplot(122)
+    # I = PDs[1]
+    # plotDGM(I)
+    # plt.title("Max Persistence = %.3g"%np.max(I[:, 1] - I[:, 0]))
+    # plt.savefig('Google2.png')
+    # # plt.show()
