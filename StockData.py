@@ -17,7 +17,7 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import urllib,time,datetime
+import urllib.request,time,datetime
 import quandl
 
 quandl.ApiConfig.api_key = "DqLVWRStVw_hyQnnQvyW"
@@ -44,7 +44,7 @@ class Quote(object):
     return ''.join(["{0},{1},{2},{3:.2f},{4:.2f},{5:.2f},{6:.2f},{7}\n".format(self.symbol,
               self.date[bar].strftime('%Y-%m-%d'),self.time[bar].strftime('%H:%M:%S'),
               self.open_[bar],self.high[bar],self.low[bar],self.close[bar],self.volume[bar]) 
-              for bar in xrange(len(self.close))])
+              for bar in range(len(self.close))])
     
   def write_csv(self,filename):
     with open(filename,'w') as f:
@@ -70,10 +70,11 @@ class GoogleIntradayQuote(Quote):
     self.symbol = symbol.upper()
     url_string = "http://www.google.com/finance/getprices?q={0}".format(self.symbol)
     url_string += "&i={0}&p={1}d&f=d,o,h,l,c,v".format(interval_seconds,num_days)
-    csv = urllib.urlopen(url_string).readlines()
-    for bar in xrange(7,len(csv)):
-      if csv[bar].count(',')!=5: continue
-      offset,close,high,low,open_,volume = csv[bar].split(',')
+    csv = urllib.request.urlopen(url_string).readlines()
+    for bar in range(7,len(csv)):
+      if csv[bar].count(b',')!=5: continue
+      offset,close,high,low,open_,volume = [str(x, 'utf-8') for x in csv[bar].split(b',')]
+      # import ipdb; ipdb.set_trace()
       if offset[0]=='a':
         day = float(offset[1:])
         offset = 0
@@ -86,4 +87,9 @@ class GoogleIntradayQuote(Quote):
    
 if __name__ == '__main__':
   q = GoogleIntradayQuote('spy',3600,5)
-  print q                                           # print it out
+  # print(q)  
+  import ipdb; ipdb.set_trace()
+  data = quandl.get("GOOG/NASDAQ_AAPL", returns="numpy", rows=10)
+  print([x[1] for x in data])
+
+                                           # print it out
