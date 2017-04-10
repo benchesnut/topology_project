@@ -13,23 +13,46 @@ Mathematical Methods:
 -------------
 In order to study the change of price through time, we will use sliding window embedding to generate point clouds based on various features and technical indicators. We will then use Rips filtration on these point clouds and study the persistence of the resulting simplicial complexes. By varying the technical indicators used as well as the size and time step of the sliding windows, we will generate many different persistence measurements for each index. From these persistence measurements, we hope to gain meaningful insights about stock trends, such as which technical indicators are more relevant or indicative for certain trends and for certain stocks and industries, and to be able to use these insights to accurately predict increases and decreases in prices.
 
-Datasets 
+Datasets
 -------------
 Quantopian: https://www.quantopian.com/home
 Quandl: https://blog.quandl.com/api-for-global-stock-data
 
-We will focus primarily on US equities and US indices. For our datasets, we will be using an API from Quantopian. Quantopian is a “crowd-sourced” hedge fund, with a feature that allows users to to backtest trading strategies for free. Quantopian has minute bar equity data starting from January 2002. By having access to minute bar data, this will give us the flexibility to experiment with a variety of different time windows. Quantopian also gives us the ability to build trading strategies and test them, so we will be able to build some algorithms based on the insights we gain from our analysis. We would also like to perform analysis on International markets. We will use Quandl’s API to pull data on international equities. Quandl only gives us access to end-of-day prices, so this may limit our analysis in terms of time windows. 
+We will focus primarily on US equities and US indices. For our datasets, we will be using an API from Quantopian. Quantopian is a “crowd-sourced” hedge fund, with a feature that allows users to to backtest trading strategies for free. Quantopian has minute bar equity data starting from January 2002. By having access to minute bar data, this will give us the flexibility to experiment with a variety of different time windows. Quantopian also gives us the ability to build trading strategies and test them, so we will be able to build some algorithms based on the insights we gain from our analysis. We would also like to perform analysis on International markets. We will use Quandl’s API to pull data on international equities. Quandl only gives us access to end-of-day prices, so this may limit our analysis in terms of time windows.
 
 ###Instruments we will focus on (subject to change):
-####Equities: 
+####Equities:
 Apple (AAPL)
 Google (GOOG)
 ExxonMobile (XOM)
 Celgene Corp (CELG)
-International Equities (to be determined) 
+International Equities (to be determined)
 
-####Indices: 
+####Indices:
 S&P 500
 DJIA
 
+####Specific Datasets:
+- End-of-day price from 2000 and minute price from past 20 days for all stocks in S&P 500, pulled from Quandl and Google Finance
 
+####Technical Features for each stock to use in TDA
+- Raw stock prices/indexes
+- Mean-centered stock prices
+- Beta (relative measure of volatility)
+- RSI
+- 5-day moving average
+- Average Directional Index (ADX)
+
+####Features extracted from TDA
+- Periodicity from point clouds
+- Momentum from persistence diagrams
+- Correlation from point clouds/persistence diagrams
+
+####Different Methods:
+- Wasserstein Distance (or L-infinity norm) to compare different stocks (Bottleneck Stability), Mean-center stocks, compare by windows
+- Sliding Window Delayed Reconstruction to find patterns in raw individual stock prices
+- Use neural networks to identify momentum based on categorizing persistence diagrams
+- Compare interday vs. intraday topology
+
+####Question:
+Can we find persistent features and patterns in stock price movements using TDA? In particular, can we find and compute periodicity, volatility, and momentum in a stock, and correlations between stocks using techniques from TDA?
