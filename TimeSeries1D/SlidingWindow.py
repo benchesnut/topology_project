@@ -39,19 +39,28 @@ def getSlidingWindowNoInterp(x, dim):
 if __name__ == '__main__':
     # import ipdb; ipdb.set_trace()
     T = 50 #The period in number of samples
-    NPeriods = 5 #How many periods to go through
+    NPeriods = 20 #How many periods to go through
     N = T*NPeriods #The total number of samples
     t = np.linspace(0, 2*np.pi*NPeriods, N+1)[0:N] #Sampling indices in time
-    # x = np.cos(t) #The final signal
-    data = quandl.get("GOOG/NASDAQ_GOOG", returns="numpy", rows=250)
-    x = [y[1] for y in data]
+    x = np.cos(t) #The final signal
+    # data = quandl.get("GOOG/NASDAQ_GOOG", returns="numpy", rows=250)
+    # x = [y[1] for y in data]
     
+    prev_day = x[99]
+    for i in range(100, 900):
+        new_price = prev_day + np.random.uniform(-.29, .31)
+        x[i] = new_price
+        prev_day = x[i]
+
+    for i in range(900, 1000):
+        x[i] = x[i] + prev_day
+
     dim = 10
     Tau = 0.5
     dT = 0.1
     X = getSlidingWindowNoInterp(x, dim)
     extent = Tau*dim
-    PDs = doRipsFiltration(X, 2)
+    PDs = doRipsFiltration(X, 1)
     pca = PCA(n_components = 2)
     Y = pca.fit_transform(X)
     eigs = pca.explained_variance_
@@ -84,8 +93,8 @@ if __name__ == '__main__':
     I = PDs[1]
     ax3.set_title("Max Persistence = %.3g"%np.max(I[:, 1] - I[:, 0]))
     plotDGM(I)
-    plt.savefig('Google1.png')
-    #plt.show()
+    # plt.savefig('Google1.png')
+    plt.show()
 
     # #Step 5: Plot original signal and the persistence diagram
     # fig = plt.figure(figsize=(12, 6))

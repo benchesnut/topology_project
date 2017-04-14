@@ -12,31 +12,50 @@ quandl.ApiConfig.api_key = "DqLVWRStVw_hyQnnQvyW"
 def analyze_SP500(dim=10, num_days=100):
 	# use for analyzing entire sp500
 	sp500 = open('SP500.csv', 'rt')
+	pd_map = {}
+	i = 0
 	for row in csv.reader(sp500, delimiter=','):
-		analyze_stock(row[0], num_days=num_days)
+		PDs = get_PD_stock(row[0], num_days=num_days)
+		if PDs is not None:
+			# make_plot(row[0], PDs)
+			pd_map[row[0]] = PDs[1]
+			i += 1
+		if i == 5:
+			calc_bottleneck_dists(pd_map)
 
-
-def analyze_stock(ticker, dim=10, num_days=100):
+def get_PD_stock(ticker, dim=10, num_days=100):
 	# gather the data
 	try:
 		data = quandl.get("GOOG/NASDAQ_" + ticker, returns="numpy", rows=100)
 	except quandl.errors.quandl_error.NotFoundError:
 		print(ticker)
-		return
+		return None
 	x = [y[1] for y in data]
     	
 	# get the sliding window vectors
 	X = getSlidingWindowNoInterp(x, dim)
 
 	# do TDA and PCA
-	PDs = doRipsFiltration(X, 2)
+	PDs = doRipsFiltration(X, 1)
+	return PDs
+
+# pd_map is a map of ticker to persistence diagram
+def calc_bottleneck_dists(pd_map):
+	keys = list(pd_map.keys())
+	with open('bottleneck_dists.csv', 'wb') as csvfile:
+		for i in range(0, len(keys)):
+			ticker1 = keys[i]
+			for j in range(i, len(keys)):
+				ticker2 = keys[j]
+				row = [ticker1, ticker2, getBottleneckDist(pd_map[ticker1], pd_map[ticker2])]
+				csvfile.writerow(row)
+
+
+
+def make_plot(ticker, PDs):
 	pca = PCA(n_components = 2)
 	Y = pca.fit_transform(X)
 	eigs = pca.explained_variance_
-
-	make_plot(ticker, PDs, Y, x)
-
-def make_plot(ticker, PDs, Y, x):
 	# Plot original signal, PCA of the embedding, and persistence diagram
 	filename = "./diagrams/" + ticker + '.png'
 	c = plt.get_cmap('Spectral')
