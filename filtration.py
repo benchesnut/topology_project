@@ -114,8 +114,9 @@ def filter(points):
 						low = head1
 					## Kill higher component
 
-					## First, add the persistence point
-					perPoints.append((birthMap[hp], comp[1]))
+					## First, add the persistence point (if it's not on the diagonal)
+					if birthMap[hp] != comp[1]:
+						perPoints.append((birthMap[hp], comp[1]))
 
 					## Then, point the higher component head to the lower one -- now they are merged
 					heads[high] = low
