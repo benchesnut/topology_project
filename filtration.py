@@ -66,6 +66,7 @@ def makeHeadArray(comps)
 	return heads
 
 def pruneHead(p, heads, pSet)
+	## Recurses until it finds an index that points to itself, then points all points in the chain to that point
 	if heads[p] == p:
 		for pAdd in pSet:
 			heads[pAdd] = p
@@ -88,13 +89,13 @@ def filtration(points)
 	for x in range(0, comps.length):
 		if x[0] == 0:
 			## Point -- Map the component to its birth weight
-			birthMap[pruneHead(x[3])] = x[1]
+			birthMap[pruneHead(x[3], [])] = x[1]
 		else:
 			## Edge -- Kill something
 				p1 = edge[2][0]
 				p2 = edge[2][1]
-				head1 = pruneHead(p1)
-				head2 = pruneHead(p2)
+				head1 = pruneHead(p1, [])
+				head2 = pruneHead(p2, [])
 				if head1 != head2:
 					if head1 > head2:
 						high = head1
