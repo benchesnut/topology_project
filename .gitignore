@@ -88,6 +88,8 @@ venv/
 ENV/
 topology/
 
+./diagrams
+
 # Spyder project settings
 .spyderproject
 
