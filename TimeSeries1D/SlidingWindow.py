@@ -34,7 +34,14 @@ def getSlidingWindowNoInterp(x, dim):
     for i in range(NWindows):
         X[i, :] = x[i:i+dim]
     return X
-        
+
+def normalizeWindows(X):
+    for i in range(0, len(X)):
+        first = X[i][0]
+        for j in range(0, len(X[i])):
+            X[i][j] = (X[i][j] - first) / first
+    return X
+      
 
 if __name__ == '__main__':
     # import ipdb; ipdb.set_trace()
@@ -46,19 +53,20 @@ if __name__ == '__main__':
     # data = quandl.get("GOOG/NASDAQ_GOOG", returns="numpy", rows=250)
     # x = [y[1] for y in data]
     
-    prev_day = x[99]
-    for i in range(100, 900):
-        new_price = prev_day + np.random.uniform(-.29, .31)
-        x[i] = new_price
-        prev_day = x[i]
+    # prev_day = x[99]
+    # for i in range(100, 900):
+    #     new_price = prev_day + np.random.uniform(-.29, .31)
+    #     x[i] = new_price
+    #     prev_day = x[i]
 
-    for i in range(900, 1000):
-        x[i] = x[i] + prev_day
+    # for i in range(900, 1000):
+    #     x[i] = x[i] + prev_day
 
     dim = 10
     Tau = 0.5
     dT = 0.1
     X = getSlidingWindowNoInterp(x, dim)
+    X = normalizeWindows(X)
     extent = Tau*dim
     PDs = doRipsFiltration(X, 1)
     pca = PCA(n_components = 2)
@@ -91,7 +99,7 @@ if __name__ == '__main__':
     ax2.set_aspect('equal', 'datalim')
     ax3 = plt.subplot(133)
     I = PDs[1]
-    ax3.set_title("Max Persistence = %.3g"%np.max(I[:, 1] - I[:, 0]))
+    # ax3.set_title("Max Persistence = %.3g"%np.max(I[:, 1] - I[:, 0]))
     plotDGM(I)
     # plt.savefig('Google1.png')
     plt.show()

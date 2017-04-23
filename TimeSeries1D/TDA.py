@@ -7,6 +7,47 @@ import numpy as np
 import time
 import matplotlib.pyplot as plt
 
+
+def makeRandomPlot():
+    X = []
+
+    for i in range(0, 10):
+        x_rand = np.random.uniform(0, 2)
+        y_rand = np.random.uniform(x_rand, 2)
+        point = [x_rand, y_rand]
+        X.append(point)
+    return X
+
+def calcParallelograms(PD, num_vert_bands, num_diag_bands):
+    points = PD[:]
+
+    # assuming no stock will more than double in a given window
+    vert_width = 2.0 / num_vert_bands
+    diag_width = 2.0 / num_diag_bands
+
+    density_matrix = np.zeros(shape=(num_diag_bands,num_vert_bands))
+
+    for i in range(0, num_vert_bands):
+
+        for j in range(0, num_diag_bands):
+
+                density = 0
+
+                for k in range(0, len(points)):
+                    point = points[k]
+                    if point[0]  >= vert_width*i and point[0] <= vert_width*(i+1):
+                        if point[1] >= (point[0] + diag_width*j ) and point[1] <= (point[0] + diag_width*(j + 1)):
+                            print(vert_width*i)
+                            print((point[0] + diag_width*j ))
+                            print(point)
+                            print("---")
+                            density = density + 1
+
+                density_matrix[i][j] = density
+
+    return density_matrix
+
+
 def plotDGM(dgm, color = 'b', sz = 20, label = 'dgm', axcolor = np.array([0.0, 0.0, 0.0]), marker = None):
     if dgm.size == 0:
         return
@@ -131,11 +172,28 @@ def doRipsFiltration(X, maxHomDim, thresh = -1, coeff = 2):
     return doRipsFiltrationDM(D, maxHomDim, thresh, coeff)
 
 if __name__ == '__main__':
-    np.random.seed(10)
-    X = np.random.randn(200, 2)
-    X = X/np.sqrt(np.sum(X**2, 1)[:, None])
-    #plt.plot(X[:, 0], X[:, 1], '.')
-    #plt.show()
-    PDs = doRipsFiltration(X, 1, coeff = 3)
-    plotDGM(PDs[1])
-    plt.show()
+   X = makeRandomPlot()
+   dm = calcParallelograms(X, 5, 5)
+   print(dm)
+   plt.plot([x[0] for x in X], [x[1] for x in X], 'ro')
+   plt.plot([0, 0], [0, 2], 'k-')
+   plt.plot([.4, .4], [0, 2], 'k-')
+   plt.plot([.8, .8], [0, 2], 'k-')
+   plt.plot([1.2, 1.2], [0, 2], 'k-')
+   plt.plot([1.6, 1.6], [0, 2], 'k-')
+   
+   plt.plot([0, 2], [0, 2], 'k-')
+   plt.plot([0, 1.6], [.4, 2], 'k-')
+   plt.plot([0, .8], [1.2, 2], 'k-')
+   plt.plot([0, 1.2], [.8, 2], 'k-')
+   plt.plot([0, .4], [1.6, 2], 'k-')
+   plt.show()
+    # np.random.seed(10)
+    # X = np.random.randn(200, 2)
+    # X = X/np.sqrt(np.sum(X**2, 1)[:, None])
+    # #plt.plot(X[:, 0], X[:, 1], '.')
+    # #plt.show()
+    # PDs = doRipsFiltration(X, 1, coeff = 3)
+    # import ipdb; ipdb.set_trace()
+    # plotDGM(PDs[1])
+    # plt.show()

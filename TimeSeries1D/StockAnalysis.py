@@ -13,15 +13,11 @@ def analyze_SP500(dim=10, num_days=100):
 	# use for analyzing entire sp500
 	sp500 = open('SP500.csv', 'rt')
 	pd_map = {}
-	i = 0
 	for row in csv.reader(sp500, delimiter=','):
 		PDs = get_PD_stock(row[0], num_days=num_days)
-		if PDs is not None:
-			# make_plot(row[0], PDs)
-			pd_map[row[0]] = PDs[1]
-			i += 1
-		if i == 5:
-			calc_bottleneck_dists(pd_map)
+		# if PDs is not None:
+		# 	make_plot(row[0], PDs)
+			# pd_map[row[0]] = PDs[1]
 
 def get_PD_stock(ticker, dim=10, num_days=100):
 	# gather the data
@@ -35,10 +31,19 @@ def get_PD_stock(ticker, dim=10, num_days=100):
 	# get the sliding window vectors
 	X = getSlidingWindowNoInterp(x, dim)
 
+	X_norm = normalizeWindows(X)
+
 	# do TDA and PCA
-	PDs = doRipsFiltration(X, 1)
+	PDs = doRipsFiltration(X_norm, 1)
+	make_plot(ticker, PDs, X_norm, x)
 	return PDs
 
+def normalizeWindows(X):
+	for i in range(0, len(X)):
+		first = X[i][0]
+		for j in range(0, len(X[i])):
+			X[i][j] = (X[i][j] - first) / first
+	return X
 # pd_map is a map of ticker to persistence diagram
 def calc_bottleneck_dists(pd_map):
 	keys = list(pd_map.keys())
@@ -52,7 +57,7 @@ def calc_bottleneck_dists(pd_map):
 
 
 
-def make_plot(ticker, PDs):
+def make_plot(ticker, PDs, X, x):
 	pca = PCA(n_components = 2)
 	Y = pca.fit_transform(X)
 	eigs = pca.explained_variance_
