@@ -124,6 +124,5 @@ def filter(points):
 	return perPoints
 
 ###TEST
-sample_in = [(0,1),(1,3),(2,2),(3,4)]
-print(filter(sample_in))
-
+# sample_in = [(0,1),(1,3),(2,2),(3,4)]
+# print(filter(sample_in))
