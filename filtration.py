@@ -97,6 +97,7 @@ def filter(points):
 		if comp[0] == 0:
 			## Point -- Map the component to its birth weight
 			birthMap[pruneHead(comp[3], heads, [])] = comp[1]
+			# print("Birth: ", comp[2])
 		else:
 			## Edge -- Kill something
 				p1 = comp[2][0]
@@ -115,8 +116,10 @@ def filter(points):
 					## Kill higher component
 
 					## First, add the persistence point (if it's not on the diagonal)
-					if birthMap[hp] != comp[1]:
-						perPoints.append((birthMap[hp], comp[1]))
+					# print("Death: ", comp[1])
+					# print (birthMap[hp])
+					if birthMap[high] != comp[1]:
+						perPoints.append((birthMap[high], comp[1]))
 
 					## Then, point the higher component head to the lower one -- now they are merged
 					heads[high] = low
@@ -124,5 +127,5 @@ def filter(points):
 	return perPoints
 
 ###TEST
-# sample_in = [(0,1),(1,3),(2,2),(3,4)]
-# print(filter(sample_in))
+sample_in = [(1,2),(2,4),(3,8),(4,3),(5,6),(6,2),(7,7)]
+print(filter(sample_in))
