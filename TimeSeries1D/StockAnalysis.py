@@ -24,7 +24,7 @@ def analyze_SP500(dim=10, num_days=100):
 		# 	make_plot(row[0], PDs)
 			# pd_map[row[0]] = PDs[1]
 
-def get_PD_stock(ticker, dim=10, num_days=100):
+def get_PD_stock(ticker, dim=100, num_days=100):
 	# gather the data
 	try:
 		data = quandl.get("GOOG/NASDAQ_" + ticker, returns="numpy", rows=num_days)
@@ -40,9 +40,16 @@ def get_PD_stock(ticker, dim=10, num_days=100):
 
 	# do TDA and PCA
 	PDs = []
-	for i in range(len(X)):
+	for i in range(1):
+		print("THIS IS ", ticker)
 		PDs.append(filtration.filter(X_norm[i]))
+		PDs[i] = [(PDs[i][j][0], PDs[i][j][1]-PDs[i][j][0]) for j in range(len(PDs[i]))]
 		print(PDs[i])
+		plt.scatter(*zip(*PDs[i]))
+		plt.show()
+		points = [(j, x[j]) for j in range(len(x))]
+		plt.plot(*zip(*points))
+		plt.show()
 	# make_plot(ticker, PDs, X_norm, x)
 	return PDs
 
