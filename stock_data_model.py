@@ -72,9 +72,9 @@ y = np.ravel(y_col)
 
 # Set up to use different algorithms
 
-# Set up MLPRegressor
-mlp_parameters = {'hidden_layer_sizes': [(4)], 'activation': ['identity', 'logistic', 'tanh']}
-mlp_algo = GridSearchCV(MLPRegressor(max_iter=1000), mlp_parameters, cv=5)
+# # Set up MLPRegressor
+# mlp_parameters = {'hidden_layer_sizes': [(4)], 'activation': ['identity', 'logistic', 'tanh']}
+# mlp_algo = GridSearchCV(MLPRegressor(max_iter=1000), mlp_parameters, cv=5)
 
 # Set up Linear Regression
 linear_algo = LinearRegression()
@@ -112,8 +112,8 @@ for pair in algos:
 
     print(label)
     # print out weights
-    print("Weights:")
-    print(algo.coef_)
+    print("Weights: ", algo.coef_)
+    print("Intercept: ", algo.intercept_)
 
     # Print out metrics
     print(explained_variance_score(y_true, y_pred))

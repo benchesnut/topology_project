@@ -1,6 +1,10 @@
 import csv
-
 import quandl
+import sys, os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import filtration
+print(os.getcwd())
+
 
 from SlidingWindow import *
 
@@ -11,7 +15,8 @@ quandl.ApiConfig.api_key = "DqLVWRStVw_hyQnnQvyW"
 
 def analyze_SP500(dim=10, num_days=100):
 	# use for analyzing entire sp500
-	sp500 = open('SP500.csv', 'rt')
+	sp500 = open('TimeSeries1D/SP500.csv', 'rt')
+	print(sp500)
 	pd_map = {}
 	for row in csv.reader(sp500, delimiter=','):
 		PDs = get_PD_stock(row[0], num_days=num_days)
@@ -22,27 +27,30 @@ def analyze_SP500(dim=10, num_days=100):
 def get_PD_stock(ticker, dim=10, num_days=100):
 	# gather the data
 	try:
-		data = quandl.get("GOOG/NASDAQ_" + ticker, returns="numpy", rows=100)
+		data = quandl.get("GOOG/NASDAQ_" + ticker, returns="numpy", rows=num_days)
 	except quandl.errors.quandl_error.NotFoundError:
 		print(ticker)
 		return None
 	x = [y[1] for y in data]
-    	
+
 	# get the sliding window vectors
 	X = getSlidingWindowNoInterp(x, dim)
 
 	X_norm = normalizeWindows(X)
 
 	# do TDA and PCA
-	PDs = doRipsFiltration(X_norm, 1)
-	make_plot(ticker, PDs, X_norm, x)
+	PDs = []
+	for i in range(len(X)):
+		PDs.append(filtration.filter(X_norm[i]))
+		print(PDs[i])
+	# make_plot(ticker, PDs, X_norm, x)
 	return PDs
 
 def normalizeWindows(X):
 	for i in range(0, len(X)):
 		first = X[i][0]
 		for j in range(0, len(X[i])):
-			X[i][j] = (X[i][j] - first) / first
+			X[i][j] = X[i][j] / first
 	return X
 # pd_map is a map of ticker to persistence diagram
 def calc_bottleneck_dists(pd_map):
@@ -84,4 +92,3 @@ def make_plot(ticker, PDs, X, x):
 
 
 analyze_SP500(num_days=100)
-
