@@ -3,6 +3,8 @@ import csv
 import quandl
 
 from SlidingWindow import *
+from ../filtration import *
+
 
 quandl.ApiConfig.api_key = "DqLVWRStVw_hyQnnQvyW"
 
@@ -34,7 +36,7 @@ def get_PD_stock(ticker, dim=10, num_days=100):
 	X_norm = normalizeWindows(X)
 
 	# do TDA and PCA
-	PDs = doRipsFiltration(X_norm, 1)
+	PDs = filter(X_norm)
 	make_plot(ticker, PDs, X_norm, x)
 	return PDs
 
