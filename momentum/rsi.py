@@ -1,27 +1,37 @@
 import pandas as pd
 import numpy as np
-import stockstats as ss
 
-def RSI(x):
+def relative_strength(prices, n=14):
+    """
+    compute the n period relative strength indicator
+    http://stockcharts.com/school/doku.php?id=chart_school:glossary_r#relativestrengthindex
+    http://www.investopedia.com/terms/r/rsi.asp
+    """
+    deltas = np.diff(prices)
+    seed = deltas[:n+1]
+    up = seed[seed >= 0].sum()/n
+    down = -seed[seed < 0].sum()/n
+    rs = up/down
+    rsi = np.zeros_like(prices)
+    rsi[:n] = 100. - 100./(1. + rs)
 
-    # n = len(x)
-    # delta = np.zeros(n-1)
-    # for a in range(1, n):
-    #     delta[a-1] = x[a] - x[a-1]
-    #
-    # dUp, dDown = delta.copy(), delta.copy()
-    # for n in range(len(dUp)):
-    #     if dUp[n] < 0:
-    #         dUp[n] = 0
-    #         dDown[n] = -dDown[n]
-    #     else:
-    #         dDown[n] = 0
-    #
-    # RolUp = pd.rolling_mean(dUp, n)
-    # RolDown = pd.rolling_mean(dDown, n)
-    #
-    # if RolDown == 0:
-    #     return 100
-    #
-    # RS = RolUp/RolDown
-    # return 100-(100/(1+RS))
+    for i in range(n, len(prices)):
+        delta = deltas[i - 1]  # cause the diff is 1 shorter
+
+        if delta > 0:
+            upval = delta
+            downval = 0.
+        else:
+            upval = 0.
+            downval = -delta
+
+        up = (up*(n - 1) + upval)/n
+        down = (down*(n - 1) + downval)/n
+
+        rs = up/down
+        # calculating distance from 50, may want to do slope later. 
+        rsi[i] = np.absolute(50 - (100. - 100./(1. + rs)))
+
+    return np.mean(rsi)
+
+    #return rsi

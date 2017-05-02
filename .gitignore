@@ -88,8 +88,6 @@ venv/
 ENV/
 topology/
 
-./diagrams
-
 # Spyder project settings
 .spyderproject
 
@@ -98,3 +96,6 @@ topology/
 
 # data dumps
 ./TimeSeries1D/DLower.txt
+./TimeSeries1D/diagrams
+input_vectors.csv
+output_vectors.csv

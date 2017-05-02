@@ -121,12 +121,13 @@ def filter(points):
 
 					## First, add the persistence point (if it's not on the diagonal)
 					# print("Death: ", comp[1])
+					# print(hp)
 					# print (birthMap[hp])
-					if birthMap[high] != comp[1]:
-						perPoints.append((birthMap[high], comp[1]))
-
-					## Then, point the higher component head to the lower one -- now they are merged
-					heads[high] = low
+					if high in birthMap.keys():
+						if birthMap[high] != comp[1]:
+							perPoints.append((birthMap[high], comp[1]))
+						## Then, point the higher component head to the lower one -- now they are merged
+						heads[high] = low
 
 	return perPoints
 

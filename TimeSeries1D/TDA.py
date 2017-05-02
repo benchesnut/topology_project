@@ -18,34 +18,39 @@ def makeRandomPlot():
         X.append(point)
     return X
 
-def calcParallelograms(PD, num_vert_bands, num_diag_bands):
+def calcBins(PD, num_vert_bands, num_horizontal_bands):
     points = PD[:]
 
+    vert_intercept = 0.8
+    hori_intercept = 0.0
     # assuming no stock will more than double in a given window
-    vert_width = 2.0 / num_vert_bands
-    diag_width = 2.0 / num_diag_bands
+    vert_width = 0.4 / num_vert_bands
+    horizontal_width = 0.5 / num_horizontal_bands
 
-    density_matrix = np.zeros(shape=(num_diag_bands,num_vert_bands))
+    density_matrix = np.zeros(shape=(num_horizontal_bands,num_vert_bands))
+
+    feature_vector = []
 
     for i in range(0, num_vert_bands):
 
-        for j in range(0, num_diag_bands):
+        for j in range(0, num_horizontal_bands):
 
                 density = 0
 
                 for k in range(0, len(points)):
                     point = points[k]
-                    if point[0]  >= vert_width*i and point[0] <= vert_width*(i+1):
-                        if point[1] >= (point[0] + diag_width*j ) and point[1] <= (point[0] + diag_width*(j + 1)):
-                            print(vert_width*i)
-                            print((point[0] + diag_width*j ))
-                            print(point)
-                            print("---")
+                    if point[0]  >= vert_intercept + vert_width*i and point[0] <= vert_intercept + vert_width*(i+1):
+                        if point[1] >= (hori_intercept + horizontal_width*j ) and point[1] <= (hori_intercept + horizontal_width*(j + 1)):
+                            # print(vert_width*i)
+                            # print((point[0] + horizontal_width*j ))
+                            # print(point)
+                            # print("---")
                             density = density + 1
 
                 density_matrix[i][j] = density
+                feature_vector.append(density)
 
-    return density_matrix
+    return feature_vector
 
 
 def plotDGM(dgm, color = 'b', sz = 20, label = 'dgm', axcolor = np.array([0.0, 0.0, 0.0]), marker = None):

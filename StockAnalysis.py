@@ -1,59 +1,81 @@
 import csv
 import quandl
 import sys, os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import TimeSeries1D.TDA as TDA
+# sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import filtration
-print(os.getcwd())
+import momentum.rsi as rsi
+# import stock_data_model
 
-
-from SlidingWindow import *
-from ../filtration import *
+from TimeSeries1D import SlidingWindow
 
 
 quandl.ApiConfig.api_key = "DqLVWRStVw_hyQnnQvyW"
 
 # dim is the length of each window, default 10
-
-
 def analyze_SP500(dim=10, num_days=100):
 	# use for analyzing entire sp500
 	sp500 = open('TimeSeries1D/SP500.csv', 'rt')
 	print(sp500)
 	pd_map = {}
+	input_file = open('input_vectors.csv', "w")
+	output_file = open('output_vectors.csv',"w")
+	in_writer = csv.writer(input_file,delimiter=',')
+	out_writer = csv.writer(output_file,delimiter=',')
+
+	# inputs, outputs = get_data_stock('ADBE', in_writer, out_writer, num_days)
+
 	for row in csv.reader(sp500, delimiter=','):
-		PDs = get_PD_stock(row[0], num_days=num_days)
+		get_data_stock(row[0], in_writer, out_writer, num_days, dim)        	
 		# if PDs is not None:
 		# 	make_plot(row[0], PDs)
-			# pd_map[row[0]] = PDs[1]
+		# 	pd_map[row[0]] = PDs[1]
 
-def get_PD_stock(ticker, dim=100, num_days=100):
+def calc_input(ticker, data, x):
+	temp = filtration.filter(data)
+	p_points = [(temp[j][0], temp[j][1]-temp[j][0]) for j in range(len(temp))]
+	# print(p_points)
+	# plt.scatter(*zip(*p_points))
+	# plt.show()
+	# points = [(j, x[j]) for j in range(len(x))]
+	# plt.plot(*zip(*points))
+	# plt.show()
+
+	input_vector = TDA.calcBins(p_points, 20, 20)
+	return input_vector
+
+def calc_output(ticker, prices):
+
+	return rsi.relative_strength(prices, n=14)
+
+def get_data_stock(ticker, in_writer, out_writer, num_days=3000, dim=100):
 	# gather the data
 	try:
 		data = quandl.get("GOOG/NASDAQ_" + ticker, returns="numpy", rows=num_days)
 	except quandl.errors.quandl_error.NotFoundError:
 		print(ticker)
-		return None
+		return
+		# return None
 	x = [y[1] for y in data]
 
 	# get the sliding window vectors
-	X = getSlidingWindowNoInterp(x, dim)
+	X = SlidingWindow.getSlidingWindowNoInterp(x, dim)
 
 	X_norm = normalizeWindows(X)
 
 	# do TDA and PCA
-	PDs = []
-	for i in range(1):
-		print("THIS IS ", ticker)
-		PDs.append(filtration.filter(X_norm[i]))
-		PDs[i] = [(PDs[i][j][0], PDs[i][j][1]-PDs[i][j][0]) for j in range(len(PDs[i]))]
-		print(PDs[i])
-		plt.scatter(*zip(*PDs[i]))
-		plt.show()
-		points = [(j, x[j]) for j in range(len(x))]
-		plt.plot(*zip(*points))
-		plt.show()
+	input_vectors = []
+	outputs = []
+	for i in range(num_days - dim):
+		# Calc input
+		input_vectors.append(calc_input(ticker, X_norm[i], x))
+		in_writer.writerow(input_vectors[i])
+		#Calc output
+		outputs.append(calc_output(ticker, X[i]))
+		out_writer.writerow([outputs[i]])
+	
 	# make_plot(ticker, PDs, X_norm, x)
-	return PDs
+	# return input_vectors, outputs
 
 def normalizeWindows(X):
 	for i in range(0, len(X)):
@@ -71,8 +93,6 @@ def calc_bottleneck_dists(pd_map):
 				ticker2 = keys[j]
 				row = [ticker1, ticker2, getBottleneckDist(pd_map[ticker1], pd_map[ticker2])]
 				csvfile.writerow(row)
-
-
 
 def make_plot(ticker, PDs, X, x):
 	pca = PCA(n_components = 2)
@@ -100,4 +120,4 @@ def make_plot(ticker, PDs, X, x):
 	plt.close()
 
 
-analyze_SP500(num_days=100)
+analyze_SP500(dim=100, num_days=500)

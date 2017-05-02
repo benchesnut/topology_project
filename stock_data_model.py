@@ -61,13 +61,17 @@ def write_csv(matrix, filepath):
         writer.writerow(row)
     ofile.close()
 
-# Begin main code body
+
+
+
+
+### MAIN BODY
 
 # Read in feature vectors
-X = read_data("sample_vectors.csv")
+X = read_data("input_vectors.csv")
 
 # Read in indicator values
-y_col = read_data("sample_indicators.csv")
+y_col = read_data("output_vectors.csv")
 y = np.ravel(y_col)
 
 # Set up to use different algorithms
@@ -85,7 +89,7 @@ ridge_algo = RidgeCV(alphas=ridge_alphas, fit_intercept=True)
 
 # Set up LASSO
 lasso_alphas = np.array([0.1, 1, 10, 100, 1000])
-lasso_algo = LassoCV(alphas=lasso_alphas, fit_intercept=True)
+lasso_algo = LassoCV(alphas=lasso_alphas, fit_intercept=True, verbose=True)
 
 algos = [(linear_algo, "Linear Regression"), (ridge_algo, "Ridge"), (lasso_algo, "Lasso")]
 

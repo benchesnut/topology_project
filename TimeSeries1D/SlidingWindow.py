@@ -3,7 +3,7 @@ import scipy.interpolate as interp
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 
-from TDA import *
+# import TDA
 import quandl
 
 quandl.ApiConfig.api_key = "DqLVWRStVw_hyQnnQvyW"
