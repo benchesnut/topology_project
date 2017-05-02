@@ -82,7 +82,11 @@ def pruneHead(p, heads, pSet):
 #### Main function
 def filter(points):
 
-	comps = makeCompList(points)
+	realpoints = []
+	for i in range(len(points)):
+		realpoints.append((i,points[i]))
+
+	comps = makeCompList(realpoints)
 
 	heads = makeHeadArray(comps)
 
@@ -127,5 +131,5 @@ def filter(points):
 	return perPoints
 
 ###TEST
-sample_in = [(1,2),(2,4),(3,8),(4,3),(5,6),(6,2),(7,7)]
-print(filter(sample_in))
+# sample_in = [(1,2),(2,4),(3,8),(4,3),(5,6),(6,2),(7,7)]
+# print(filter(sample_in))
