@@ -80,28 +80,28 @@ y = np.ravel(y_col)
 # mlp_parameters = {'hidden_layer_sizes': [(4)], 'activation': ['identity', 'logistic', 'tanh']}
 # mlp_algo = GridSearchCV(MLPRegressor(max_iter=1000), mlp_parameters, cv=5)
 
-# Set up Linear Regression
-linear_algo = LinearRegression()
-
-# Set up Ridge Regression
-ridge_alphas = np.array([0.1, 1, 10, 100, 1000])
-ridge_algo = RidgeCV(alphas=ridge_alphas, fit_intercept=True)
+# # Set up Linear Regression
+# linear_algo = LinearRegression()
+#
+# # Set up Ridge Regression
+# ridge_alphas = np.array([0.1, 1, 10, 100, 1000])
+# ridge_algo = RidgeCV(alphas=ridge_alphas, fit_intercept=True)
 
 # Set up LASSO
-lasso_alphas = np.array([0.1, 1, 10, 100, 1000])
-lasso_algo = LassoCV(alphas=lasso_alphas, fit_intercept=True, verbose=True)
+# lasso_alphas = np.array([0.1, 1, 10, 100, 1000])
+lasso_algo = LassoCV(cv=5, fit_intercept=True, verbose=True)
 
-algos = [(linear_algo, "Linear Regression"), (ridge_algo, "Ridge"), (lasso_algo, "Lasso")]
+algos = [(lasso_algo, "Lasso")]
 
 # Use cross validation to prevent overfitting
-for pair in algos:
-    algo = pair[0]
-    label = pair[1]
-    print("Computing cross validation scores...")
-    scores = cross_val_score(algo, X, y, cv=5, scoring='neg_mean_absolute_error')
-    print("Printing scores for " + label)
-    for score in scores:
-        print(score)
+# for pair in algos:
+#     algo = pair[0]
+#     label = pair[1]
+#     print("Computing cross validation scores...")
+#     scores = cross_val_score(algo, X, y, cv=5, scoring='neg_mean_absolute_error')
+#     print("Printing scores for " + label)
+#     for score in scores:
+#         print(score)
 
 # Split the dataset into two equal parts
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=0)
@@ -115,13 +115,15 @@ for pair in algos:
     y_true, y_pred = y_test, algo.predict(X_test)
 
     print(label)
+    print(algo.get_params(deep=True))
     # print out weights
     print("Weights: ", algo.coef_)
     print("Intercept: ", algo.intercept_)
+    print("Alpha: ", algo.alpha_)
 
     # Print out metrics
-    print(explained_variance_score(y_true, y_pred))
-    print(mean_absolute_error(y_true, y_pred))
-    print(r2_score(y_true, y_pred))
+    print("Explained variance: ", explained_variance_score(y_true, y_pred))
+    print("Mean absolute error: ", mean_absolute_error(y_true, y_pred))
+    print("R-squared score: ", r2_score(y_true, y_pred))
 
 print("finished")
